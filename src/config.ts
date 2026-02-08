@@ -38,7 +38,7 @@ function validateConfig(file: any): Config {
         const configJson = JSON.parse(file);
         const configObj: Config = {
             dbUrl: configJson.db_url,
-            currentUserName: configJson.current_user_name
+            currentUserName: configJson.current_user_name,
         };
         return configObj;
     } catch (err) {

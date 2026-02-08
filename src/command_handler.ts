@@ -1,10 +1,15 @@
 import { setUser } from "./config.js";
+import { createUser, getUser } from "./lib/db/queries/users";
 
-export type CommandHandler = (cmdName: string, ...args: string[]) => void;
+export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
 
-export function handlerLogin(cmdName: string, ...args: string[]) {
+export async function handlerLogin(cmdName: string, ...args: string[]) {
     if (args.length !== 1) {
         throw new Error("Invalid input, arguments required");
+    }
+    const userCheck = await getUser(args[0]);
+    if (!userCheck) {
+        throw new Error("User does not exist");
     }
     setUser(args[0]);
     console.log("User has been set");
@@ -21,5 +26,19 @@ export function runCommand(registry: CommandsRegistry, cmdName: string, ...args:
     if (!cmdHandler) {
         throw new Error(`Unknown command: ${cmdName}`);
     }
-    cmdHandler(cmdName, ...args);
+    return cmdHandler(cmdName, ...args);
+}
+
+export async function register(cmdName: string, ...args: string[]): Promise<void> {
+    if (args.length != 1) {
+        throw new Error("Invalid number of arguments");
+    }
+    const userCheck = await getUser(args[0]);
+    if (userCheck) {
+        throw new Error("User already exists");
+    }
+    const user = await createUser(args[0]);
+    setUser(user.name);
+    console.log(`User ${user.name} has been set`);
+    console.log(user);
 }
