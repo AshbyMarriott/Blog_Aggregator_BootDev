@@ -1,10 +1,14 @@
 import { setUser, readConfig } from "./config.js";
-import { CommandsRegistry, CommandHandler, registerCommand, handlerLogin, runCommand, register } from "./command_handler.js";
+import { CommandsRegistry, CommandHandler, registerCommand,
+     handlerLogin, runCommand, register, reset, users
+     } from "./command_handler.js";
 
 async function main() {
     const registry: CommandsRegistry = {};
     registerCommand(registry, "login", handlerLogin);
     registerCommand(registry, "register", register);
+    registerCommand(registry, "reset", reset);
+    registerCommand(registry, "users", users);
     const cmdArgs  = process.argv.slice(2);
     if (cmdArgs.length < 1) {
         console.log("Insufficient arguments");
