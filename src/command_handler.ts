@@ -1,5 +1,6 @@
 import { setUser, readConfig, Config } from "./config.js";
 import { createUser, getUser, deleteUsers, getUsers } from "./lib/db/queries/users";
+import { fetchFeed } from "./lib/rss";
 
 export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
 
@@ -57,12 +58,17 @@ export async function users(cmdName: string, ...args: string[]): Promise<void> {
     const users = await getUsers();
     const currentUser = readConfig().currentUserName;
     for (let user of users) {
-        let userString = user.name;
+        let userString = `* ${user.name}`;
         if (user.name === currentUser) {
             userString += " (current)";
         }
         console.log(userString);
     }
+}
+
+export async function agg(cmdName: string, ...args: string[]): Promise<void> {
+    const feedObj = await fetchFeed("https://www.wagslane.dev/index.xml");
+    console.log(feedObj);
 }
 
 
