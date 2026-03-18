@@ -1,5 +1,6 @@
 import { setUser, readConfig, Config } from "./config.js";
-import { createUser, getUser, deleteUsers, getUsers } from "./lib/db/queries/users";
+import { User, createUser, getUser, deleteUsers, getUsers } from "./lib/db/queries/users";
+import { Feed, createFeed, printFeed, getFeedsWithUsername } from "./lib/db/queries/feeds";
 import { fetchFeed } from "./lib/rss";
 
 export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
@@ -71,4 +72,32 @@ export async function agg(cmdName: string, ...args: string[]): Promise<void> {
     console.log(feedObj);
 }
 
+export async function addFeed(cmdName: string, ...args: string[]): Promise<void> {
+    if (args.length != 2) {
+        throw new Error("Invalid number of arguments. FeedName, URL required");
+    }
+    const config = readConfig();
+    if (!config.currentUserName){
+        throw new Error("No user currently logged in. Use login or register commands to set current user.");
+    }
+    const currentUser = await getUser(config.currentUserName);
+    if (!currentUser) {
+        throw new Error("Error fetching current user from database");
+    }
+
+    const feed = await createFeed(args[0], args[1], currentUser.id);
+    printFeed(feed, currentUser);
+}
+
+
+export async function feeds(cmdName: string, ...args: string[]): Promise<void> {
+    const feedsWithUsername = await getFeedsWithUsername();
+    let printStr = '';
+    for (let feedObj of feedsWithUsername) {
+        printStr += `Feed Name: ${feedObj.feedName}\n`
+            + `Feed URL: ${feedObj.feedURL}\n`
+            + `User: ${feedObj.userName}\n\n`;
+    }
+    console.log(printStr);
+}
 

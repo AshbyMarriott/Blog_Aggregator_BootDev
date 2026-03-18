@@ -1,6 +1,6 @@
 import { setUser, readConfig } from "./config.js";
 import { CommandsRegistry, CommandHandler, registerCommand,
-     handlerLogin, runCommand, register, reset, users, agg
+     handlerLogin, runCommand, register, reset, users, agg, addFeed, feeds
      } from "./command_handler.js";
 
 async function main() {
@@ -10,6 +10,9 @@ async function main() {
     registerCommand(registry, "reset", reset);
     registerCommand(registry, "users", users);
     registerCommand(registry, "agg", agg);
+    registerCommand(registry, "addfeed", addFeed);
+    registerCommand(registry, "feeds", feeds);
+
     const cmdArgs  = process.argv.slice(2);
     if (cmdArgs.length < 1) {
         console.log("Insufficient arguments");
