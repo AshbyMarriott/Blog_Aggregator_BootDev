@@ -1,6 +1,7 @@
 import { setUser, readConfig } from "./config.js";
 import { CommandsRegistry, CommandHandler, registerCommand,
-     handlerLogin, runCommand, register, reset, users, agg, addFeed, feeds
+     handlerLogin, runCommand, register, reset, users, agg, addFeed, feeds,
+     follow, following
      } from "./command_handler.js";
 
 async function main() {
@@ -12,6 +13,8 @@ async function main() {
     registerCommand(registry, "agg", agg);
     registerCommand(registry, "addfeed", addFeed);
     registerCommand(registry, "feeds", feeds);
+    registerCommand(registry, "follow", follow);
+    registerCommand(registry, "following", following);
 
     const cmdArgs  = process.argv.slice(2);
     if (cmdArgs.length < 1) {

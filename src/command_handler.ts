@@ -1,7 +1,8 @@
 import { setUser, readConfig, Config } from "./config.js";
 import { User, createUser, getUser, deleteUsers, getUsers } from "./lib/db/queries/users";
-import { Feed, createFeed, printFeed, getFeedsWithUsername } from "./lib/db/queries/feeds";
+import { Feed, createFeed, printFeed, getFeedsWithUsername, getFeedByURL } from "./lib/db/queries/feeds";
 import { fetchFeed } from "./lib/rss";
+import { createFeedFollow, getFeedFollowsForUser } from "./lib/db/queries/feedFollows";
 
 export type CommandHandler = (cmdName: string, ...args: string[]) => Promise<void>;
 
@@ -76,16 +77,11 @@ export async function addFeed(cmdName: string, ...args: string[]): Promise<void>
     if (args.length != 2) {
         throw new Error("Invalid number of arguments. FeedName, URL required");
     }
-    const config = readConfig();
-    if (!config.currentUserName){
-        throw new Error("No user currently logged in. Use login or register commands to set current user.");
-    }
-    const currentUser = await getUser(config.currentUserName);
-    if (!currentUser) {
-        throw new Error("Error fetching current user from database");
-    }
+    
+    const currentUser = await getCurrentUser();
 
     const feed = await createFeed(args[0], args[1], currentUser.id);
+    await createFeedFollow(feed.id, currentUser.id);
     printFeed(feed, currentUser);
 }
 
@@ -101,3 +97,42 @@ export async function feeds(cmdName: string, ...args: string[]): Promise<void> {
     console.log(printStr);
 }
 
+export async function getCurrentUser() {
+    const config = readConfig();
+    if (!config.currentUserName){
+        throw new Error("No user currently logged in. Use login or register commands to set current user.");
+    }
+    const currentUser = await getUser(config.currentUserName);
+    if (!currentUser) {
+        throw new Error("Error fetching current user from database");
+    }
+    return currentUser;
+}
+
+export async function follow(cmdName: string, ...args: string[]): Promise<void> {
+    if (args.length != 1){
+        throw new Error("Invalid number of arguments: URL required");
+    }
+    const feedIdName = await getFeedByURL(args[0]);
+    if (!feedIdName) {
+        throw new Error("Feed does not exist for provided URL");
+    }
+    const currentUser = await getCurrentUser();
+    const feedFollow = await createFeedFollow(feedIdName.feedId, currentUser.id);
+    
+    console.log(
+        `Feed Name: ${feedFollow.feedName}\n`
+        + `Current User: ${feedFollow.userName}\n`
+    );
+}
+
+export async function following(cmdName: string, ...args: string[]): Promise<void> {
+    const user = await getCurrentUser();
+    const userFeedFollows = await getFeedFollowsForUser(user);
+    let printStr = `${user.name} Follows:`;
+    for (let follow of userFeedFollows) {
+        printStr += `\n\t${follow.feedName}`
+    }
+    printStr += "\n";
+    console.log(printStr);
+}

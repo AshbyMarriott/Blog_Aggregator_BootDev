@@ -30,3 +30,14 @@ export function printFeed(feed: Feed, user: User) {
         + `\n\tCreated: ${user.createdAt}\n\tUpdated: ${user.updatedAt}`;
     console.log(printStr);
 }
+
+export async function getFeedByURL(url: string) {
+    const [feedIdName] = await db
+        .select({
+            feedId: feeds.id,
+            feedName: feeds.name
+        })
+        .from(feeds)
+        .where(eq(feeds.url, url));
+    return feedIdName;
+}

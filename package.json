@@ -20,7 +20,7 @@
   "homepage": "https://github.com/AshbyMarriott/Blog_Aggregator_BootDev#readme",
   "description": "",
   "devDependencies": {
-    "@types/node": "^25.2.2",
+    "@types/node": "^25.6.0",
     "drizzle-kit": "^0.31.9",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
