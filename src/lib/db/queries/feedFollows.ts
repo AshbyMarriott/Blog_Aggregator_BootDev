@@ -50,3 +50,4 @@ export async function deleteFeedFollow(user: User, feedURL: string) {
                 eq(feedFollows.feedId, feed.feedId))
         );
 }
+

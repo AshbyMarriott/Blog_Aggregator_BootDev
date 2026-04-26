@@ -1,9 +1,10 @@
 import { setUser, readConfig } from "./config.js";
 import { CommandsRegistry, CommandHandler, registerCommand,
-     handlerLogin, runCommand, register, reset, users, agg, addFeed, feeds,
+     handlerLogin, runCommand, register, reset, users, addFeed, feeds,
      follow, following,
      unfollow
      } from "./command_handler.js";
+import { agg } from "./commands/aggregate.js"
 import { middlewareLoggedIn } from "./middleware.js";
 
 async function main() {

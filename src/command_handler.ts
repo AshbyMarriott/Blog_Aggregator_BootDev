@@ -73,10 +73,7 @@ export async function users(cmdName: string, ...args: string[]): Promise<void> {
     }
 }
 
-export async function agg(cmdName: string, ...args: string[]): Promise<void> {
-    const feedObj = await fetchFeed("https://www.wagslane.dev/index.xml");
-    console.log(feedObj);
-}
+
 
 export async function addFeed(cmdName: string, user: User, ...args: string[]): Promise<void> {
     if (args.length != 2) {

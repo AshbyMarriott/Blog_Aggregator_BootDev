@@ -15,6 +15,13 @@
       "when": 1776925158029,
       "tag": "0001_melodic_valkyrie",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1777148147630,
+      "tag": "0002_clammy_skaar",
+      "breakpoints": true
     }
   ]
 }
