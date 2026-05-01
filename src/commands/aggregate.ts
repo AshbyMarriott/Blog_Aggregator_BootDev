@@ -1,5 +1,7 @@
 import { getNextFeedToFetch, markFeedFetched } from "src/lib/db/queries/feeds";
+import { createPost } from "src/lib/db/queries/posts";
 import { fetchFeed } from "src/lib/rss";
+
 
 export async function agg(cmdName: string, ...args: string[]): Promise<void> {
     if (args.length != 1) {
@@ -32,9 +34,25 @@ export async function scrapeFeeds() {
     await markFeedFetched(feedToFetch.id);
     const feed = await fetchFeed(feedToFetch.url);
 
-    for (let item of feed.items) {
-        console.log(item.title);
+    function parseDate(dateStr: string | undefined): Date | null {
+        if (!dateStr) return null;
+        const d = new Date(dateStr);
+        return isNaN(d.getTime()) ? null : d;
     }
+
+    for (let item of feed.items) {
+        const itemPubDate = parseDate(item.pubDate);
+
+        await createPost( {
+            title: item.title,
+            url: item.link,
+            description: item.description,
+            publishedAt: itemPubDate,
+            feedId: feedToFetch.id
+        });
+    }
+
+    console.log(`Feed ${feedToFetch.name} fetched, ${feed.items.length} posts saved.`);
 }
 
 function parseDuration(durationStr: string): number {

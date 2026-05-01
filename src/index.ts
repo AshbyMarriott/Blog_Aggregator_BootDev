@@ -6,6 +6,7 @@ import { CommandsRegistry, CommandHandler, registerCommand,
      } from "./command_handler.js";
 import { agg } from "./commands/aggregate.js"
 import { middlewareLoggedIn } from "./middleware.js";
+import { browse } from "./commands/browse.js";
 
 async function main() {
     const registry: CommandsRegistry = {};
@@ -19,6 +20,7 @@ async function main() {
     registerCommand(registry, "follow", middlewareLoggedIn(follow));
     registerCommand(registry, "following", middlewareLoggedIn(following));
     registerCommand(registry, "unfollow", middlewareLoggedIn(unfollow));
+    registerCommand(registry, "browse", middlewareLoggedIn(browse));
 
     const cmdArgs  = process.argv.slice(2);
     if (cmdArgs.length < 1) {
