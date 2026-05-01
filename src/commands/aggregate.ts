@@ -11,8 +11,7 @@ export async function agg(cmdName: string, ...args: string[]): Promise<void> {
     console.log(`Collecting feeds every ${args[0]}`);
     
     const handleError = (err: unknown) => { 
-        console.error(err);
-        process.exit(1);
+        console.error(`Error scraping feeds: ${err instanceof Error ? err.message : err}`);
     }
     scrapeFeeds().catch(handleError);
 

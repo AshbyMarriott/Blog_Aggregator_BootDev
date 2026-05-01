@@ -1,12 +1,17 @@
-import { setUser, readConfig } from "./config.js";
-import { CommandsRegistry, CommandHandler, registerCommand,
-     handlerLogin, runCommand, register, reset, users, addFeed, feeds,
-     follow, following,
-     unfollow
-     } from "./command_handler.js";
+import { CommandsRegistry, registerCommand, runCommand } from "./command_handler.js";
 import { agg } from "./commands/aggregate.js"
 import { middlewareLoggedIn } from "./middleware.js";
 import { browse } from "./commands/browse.js";
+import { handlerLogin } from "./commands/login.js";
+import { register } from "./commands/register.js";
+import { reset } from "./commands/reset.js";
+import { users } from "./commands/users.js";
+import { addFeed } from "./commands/addFeed.js";
+import { feeds } from "./commands/feeds.js";
+import { follow } from "./commands/follow.js";
+import { following } from "./commands/following.js";
+import { unfollow } from "./commands/unfollow.js";
+
 
 async function main() {
     const registry: CommandsRegistry = {};
