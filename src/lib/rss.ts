@@ -12,24 +12,23 @@ export async function fetchFeed(feedURL: string) {
     const parser = new XMLParser();
     const responseObj = parser.parse(responseStr);
 
-    const fields = ["title", "link", "description"] as const;
-    type ChannelKey = (typeof fields)[number];
-    const channel: Record<ChannelKey, string> = {
-        title: '',
-        link: '',
-        description: ''
-    };
     
-    if (!("channel" in responseObj.rss)) {
-        throw new Error("channel field not found in response");
+    
+    const rawChannel = responseObj.rss?.channel;
+
+    if (!rawChannel) {
+        throw new Error("Channel field not found in response");
     }
-    for (const field of fields) {
-        const val = responseObj.rss?.channel?.[field];
-        if (typeof val !== "string" || val.trim() === ""){
-            throw new Error(`${field} value is invalid`);
-        }
-        channel[field] = val;
+
+    if (typeof rawChannel.title !== "string" || rawChannel.title.trim() === "") {
+        throw new Error("Feed title is missing or invalid");
     }
+
+    const channel = {
+        title: rawChannel.title,
+        link: typeof rawChannel.link === "string" ? rawChannel.link : "",
+        description: typeof rawChannel.description === "string" ? rawChannel.description : ""
+    };
 
     
     type Item = {
