@@ -2,6 +2,7 @@ import { getNextFeedToFetch, markFeedFetched } from "src/lib/db/queries/feeds";
 import { createPost } from "src/lib/db/queries/posts";
 import { fetchFeed } from "src/lib/rss";
 
+const MAX_FEED_ITEM_TITLES_DISPLAYED = 10;
 
 export async function agg(cmdName: string, ...args: string[]): Promise<void> {
     if (args.length != 1) {
@@ -31,6 +32,7 @@ export async function agg(cmdName: string, ...args: string[]): Promise<void> {
 export async function scrapeFeeds() {
     const feedToFetch = await getNextFeedToFetch();
     await markFeedFetched(feedToFetch.id);
+    console.log(`Fetching posts for ${feedToFetch.name}...`);
     const feed = await fetchFeed(feedToFetch.url);
 
     function parseDate(dateStr: string | undefined): Date | null {
@@ -38,10 +40,14 @@ export async function scrapeFeeds() {
         const d = new Date(dateStr);
         return isNaN(d.getTime()) ? null : d;
     }
-
+    let i = 1;
+    console.log(`========== Displaying first ${MAX_FEED_ITEM_TITLES_DISPLAYED} posts fetched from ${feedToFetch.name} ==========`);
     for (let item of feed.items) {
         const itemPubDate = parseDate(item.pubDate);
-
+        if (i <= MAX_FEED_ITEM_TITLES_DISPLAYED) {
+            console.log(`\t${i}. ${item.title}`);
+            i++;
+        }
         await createPost( {
             title: item.title,
             url: item.link,
